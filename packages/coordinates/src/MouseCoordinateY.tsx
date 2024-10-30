@@ -1,5 +1,5 @@
+import { GenericChartComponent, getMouseCanvas, isNotDefined } from "@react-financial-charts/core";
 import * as React from "react";
-import { getMouseCanvas, GenericChartComponent, isNotDefined } from "@react-financial-charts/core";
 import { drawOnCanvas } from "./EdgeCoordinateV3";
 
 export interface MouseCoordinateYProps {
@@ -21,6 +21,7 @@ export interface MouseCoordinateYProps {
     readonly textFill?: string;
     readonly yAccessor?: (data: any) => number | undefined;
     readonly yAxisPad?: number;
+    readonly getYPos?: (data: { y: number }) => void;
 }
 
 export class MouseCoordinateY extends React.Component<MouseCoordinateYProps> {
@@ -84,13 +85,17 @@ export class MouseCoordinateY extends React.Component<MouseCoordinateYProps> {
             return undefined;
         }
 
-        const { displayFormat, yAccessor } = props;
+        const { displayFormat, yAccessor, getYPos } = props;
 
         if (yAccessor && !currentItem) {
             return undefined;
         }
 
         const y = yAccessor ? yScale(yAccessor(currentItem)) : mouseXY[1];
+
+        if (getYPos) {
+            getYPos({ y });
+        }
 
         const coordinate = displayFormat(yScale.invert(y));
 
